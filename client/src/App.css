@@ -1,0 +1,60 @@
+.marker {
+  background-color: red;
+  background-size: cover;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.dashboard {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  position: relative;
+  margin: 0 auto;
+}
+
+.map-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  /* flex: 6; */
+}
+.card-container {
+  /* overflow: scroll; */
+}
+
+.selected-mountain {
+  background: white;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 140px;
+  z-index: 50;
+}
+
+.card {
+  border-radius: 16px;
+  /* height: 60px; */
+  border: 2px solid red;
+  padding: 2rem;
+  display: flex;
+  cursor: pointer;
+}
+
+.sidebar {
+  background-color: rgba(35, 55, 75, 0.9);
+  color: #fff;
+  padding: 6px 12px;
+  font-family: monospace;
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 12px;
+  border-radius: 4px;
+}

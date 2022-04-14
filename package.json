@@ -1,0 +1,22 @@
+{
+  "name": "14ers-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "csv-parse": "^5.0.4",
+    "csv2geojson": "^5.1.1",
+    "csvtojson": "^2.0.10",
+    "express": "^4.17.3",
+    "fs": "^0.0.1-security",
+    "node-csv": "^0.1.2",
+    "nodemon": "^2.0.15"
+  }
+}
