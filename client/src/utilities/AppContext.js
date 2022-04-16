@@ -31,10 +31,6 @@ const AppContextProvider = ({ children }) => {
     setMountainSelected(newMountain);
   };
 
-  const clearSelectedMountain = () => {
-    setMountainSelected(null);
-  };
-
   return (
     <AppContext.Provider
       value={{
@@ -44,7 +40,6 @@ const AppContextProvider = ({ children }) => {
         togglePullout,
         updateSelectedMountain,
         mountainSelected,
-        clearSelectedMountain,
       }}
     >
       {children}

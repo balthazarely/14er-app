@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, useContext } from "react";
+import React, { useRef, useEffect, useContext } from "react";
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
 import queryString from "query-string";
 import { AppContext } from "../utilities/AppContext";
@@ -182,13 +182,18 @@ export default function BasicMap({ lng, setLng, lat, setLat, zoom, setZoom }) {
     }
   }, [globalContext.mountains]);
 
-  useEffect(() => {
-    console.log("mountain has been selected....");
-  }, [globalContext.mountainSelected]);
+  const flyToCoords = (long, lat) => {
+    map.current.flyTo({
+      center: [long, lat],
+      zoom: 14,
+      duration: 2000,
+      essential: true,
+    });
+  };
 
   return (
     <div className="relative dashboard">
-      <SearchCardContainer />
+      <SearchCardContainer flyToCoords={flyToCoords} />
       <DashboardCardContainer />
       <div className={`map-container`} ref={mapContainer} />
     </div>
