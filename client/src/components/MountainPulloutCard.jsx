@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useContext } from "react";
 import { SwishSpinner } from "react-spinners-kit";
 import { Link } from "react-router-dom";
-import { ArrowLeftIcon } from "@heroicons/react/solid";
 import { AppContext } from "../utilities/AppContext";
+import { BiCurrentLocation } from "react-icons/bi";
+import { HiArrowLeft } from "react-icons/hi";
 
-export default function MountainPulloutCard() {
+export default function MountainPulloutCard({ flyToCoords, resetMapView }) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const globalContext = useContext(AppContext);
 
@@ -17,15 +18,11 @@ export default function MountainPulloutCard() {
   }, [globalContext.mountainSelected]);
 
   return (
-    <div className="relative flex flex-col justify-center px-8 py-8 border-2 shadow-2xl ">
-      <ArrowLeftIcon
-        onClick={() => globalContext.togglePullout()}
-        className={` ${
-          globalContext.pulloutCardOpen ? " rotate-0" : "rotate-180"
-        } absolute z-50 w-6 h-12 p-1 text-red-800 -translate-y-1/2 bg-white cursor-pointer top-1/2 transform -right-6 hover:bg-gray-100`}
-      />
-
-      {globalContext.mountainSelected ? (
+    <div
+      className="flex flex-col justify-center px-8 pb-8 "
+      onClick={() => globalContext.toggleSearchDropdown(true)}
+    >
+      {globalContext.mountainSelected && (
         <>
           <div className="relative w-full h-56 ">
             <div className="absolute top-0 left-0 w-full h-full ">
@@ -37,7 +34,6 @@ export default function MountainPulloutCard() {
                 src={globalContext.mountainSelected.photo}
               />
             </div>
-
             <div className="absolute top-0 left-0 flex items-center justify-center w-full h-full ">
               {!imageLoaded && (
                 <SwishSpinner size={30} color="#686769" loading={true} />
@@ -48,8 +44,9 @@ export default function MountainPulloutCard() {
           <div className="mt-6 text-2xl font-bold">
             {globalContext.mountainSelected.Mountain_Peak}
           </div>
-          <div className="flex flex-row justify-start mt-6 gap-7">
-            <div className="flex flex-col items-start ">
+
+          <div className="grid grid-cols-2 gap-2 mt-4">
+            <div className="">
               <div className="text-xs font-semibold tracking-widest text-gray-400 uppercase">
                 Feet
               </div>
@@ -58,7 +55,7 @@ export default function MountainPulloutCard() {
                 <span className="text-gray-500 lowercase">ft</span>
               </div>
             </div>
-            <div className="flex flex-col items-start ">
+            <div className="">
               <div className="text-xs font-semibold tracking-widest text-gray-400 uppercase">
                 Distance
               </div>
@@ -67,7 +64,7 @@ export default function MountainPulloutCard() {
                 <span className="text-gray-500 lowercase">mi</span>
               </div>
             </div>
-            <div className="flex flex-col items-start ">
+            <div className="">
               <div className="text-xs font-semibold tracking-widest text-gray-400 uppercase">
                 Elev. Gain
               </div>
@@ -76,24 +73,55 @@ export default function MountainPulloutCard() {
                 <span className="text-gray-500 lowercase">ft</span>
               </div>
             </div>
+            <div className="">
+              <div className="text-xs font-semibold tracking-widest text-gray-400 uppercase">
+                Class
+              </div>
+              <div className="text-sm font-bold text-black">
+                {globalContext.mountainSelected.Difficulty}{" "}
+              </div>
+            </div>
           </div>
-          <div className="flex flex-col items-center justify-center mt-6">
+
+          <div className="flex flex-col items-center justify-center mt-8">
             <div className="text-sm leading-6 text-gray-700">
               Browse 10,000+ hiking app work, designs, illustrations, and
               graphic elementsBrowse 10,000+ hiking app work, designs,
               illustrations, and graphic elements
             </div>
           </div>
-          <Link className="w-full" to={`${globalContext.mountainSelected.ID}`}>
-            <button className="w-full px-6 py-4 mt-6 text-sm font-bold text-white uppercase bg-red-800 bg-red">
-              View In 3d
+
+          <div className="flex gap-1 mt-6 ">
+            <button
+              onClick={() => {
+                globalContext.updateSelectedMountain(null);
+                window.history.replaceState(null, null, `mountains`);
+                resetMapView();
+              }}
+              className="px-4 py-4 text-sm font-bold text-white uppercase bg-red-800 hover:bg-red-900"
+            >
+              <HiArrowLeft className="text-xl" />
             </button>
-          </Link>
-        </>
-      ) : (
-        <>
-          <div className="text-2xl font-bold text-red-800">
-            Click on a map point to get started!
+
+            <button
+              onClick={() => {
+                flyToCoords(
+                  globalContext.mountainSelected.Long,
+                  globalContext.mountainSelected.Lat
+                );
+              }}
+              className="px-4 py-4 text-sm font-bold text-white uppercase bg-red-800 hover:bg-red-900"
+            >
+              <BiCurrentLocation className="text-xl" />
+            </button>
+            <Link
+              className="w-full"
+              to={`${globalContext.mountainSelected.ID}`}
+            >
+              <button className="w-full px-6 py-4 text-sm font-bold text-white uppercase bg-red-800 hover:bg-red-900 ">
+                3d Map
+              </button>
+            </Link>
           </div>
         </>
       )}

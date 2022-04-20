@@ -1,3 +1,14 @@
+@import url("https://fonts.googleapis.com/css2?family=Yesteryear&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Staatliches&display=swap");
+
+.app-header-script {
+  font-family: "Yesteryear", cursive;
+}
+
+.app-header-sans {
+  font-family: "Staatliches", cursive;
+}
+
 .marker {
   background-color: red;
   background-size: cover;

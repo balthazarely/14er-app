@@ -5,8 +5,9 @@ const AppContext = createContext();
 
 const AppContextProvider = ({ children }) => {
   const [mountains, setMountains] = useState(null);
-  const [pulloutCardOpen, setPulloutCardOpen] = useState(false);
+  const [pulloutCardOpen, setPulloutCardOpen] = useState(true);
   const [mountainSelected, setMountainSelected] = useState(null);
+  const [isSearchDropdownHidden, setIsSearchDropdownHidden] = useState(false);
 
   useEffect(() => {
     async function httpGetMountains() {
@@ -31,6 +32,10 @@ const AppContextProvider = ({ children }) => {
     setMountainSelected(newMountain);
   };
 
+  const toggleSearchDropdown = (boolean) => {
+    setIsSearchDropdownHidden(boolean);
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -40,6 +45,8 @@ const AppContextProvider = ({ children }) => {
         togglePullout,
         updateSelectedMountain,
         mountainSelected,
+        isSearchDropdownHidden,
+        toggleSearchDropdown,
       }}
     >
       {children}

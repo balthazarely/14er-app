@@ -1,7 +1,9 @@
 import React, { useContext, useState, useEffect } from "react";
 import { AppContext } from "../utilities/AppContext";
+import { FaMountain } from "react-icons/fa";
+import { BiSearchAlt } from "react-icons/bi";
 
-export default function SearchCardContainer({ flyToCoords }) {
+export default function SearchCardContainer({ flyToCoords, childFunc }) {
   const globalContext = useContext(AppContext);
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -22,7 +24,6 @@ export default function SearchCardContainer({ flyToCoords }) {
     const callSearchService = async () => {
       if (searchQuery.length > 2) {
         let searchResults = [];
-        // console.log(globalContext.mountains);
         globalContext.mountains.features.map((mtn) => {
           if (
             mtn.properties.Mountain_Peak.toLowerCase().includes(searchQuery)
@@ -30,21 +31,13 @@ export default function SearchCardContainer({ flyToCoords }) {
             searchResults.push(mtn);
           }
         });
-
         setSearchResults(searchResults);
-        console.log(searchResults);
-
-        // const { tracks } = await searchForArtist(searchQuery);
-        // setSearchResults(tracks);
-        // console.log(tracks);
       }
     };
 
     let debouncer = setTimeout(() => {
       setLoading(true);
       callSearchService();
-
-      console.log("calling the filter to change the data");
       setTimeout(() => {
         setLoading(false);
       }, 1000);
@@ -54,25 +47,49 @@ export default function SearchCardContainer({ flyToCoords }) {
     };
   }, [searchQuery]);
 
+  React.useEffect(() => {
+    childFunc.current = alertUser;
+  }, []);
+
+  function alertUser() {
+    setSearchQuery("");
+  }
+
   return (
     <div
-      className={`  absolute right-0 top-0 bg-white z-50  w-80 transition-all duration-200 p-8 `}
+      className={` relative bg-white z-50 w-72 transition-all duration-200 p-8  `}
     >
-      <input
-        onChange={(e) => setUserInput(e.target.value)}
-        className="border-4"
-      />
-      {searchResults &&
-        searchResults.map((result) => (
-          <div
-            onClick={() => {
-              flyToCoords(result.properties.Long, result.properties.Lat);
-              globalContext.updateSelectedMountain(result.properties);
-            }}
-          >
-            {result.properties.Mountain_Peak}
-          </div>
-        ))}
+      <div className="absolute">
+        <input
+          value={searchQuery}
+          onChange={(e) => setUserInput(e.target.value)}
+          onClick={() => globalContext.toggleSearchDropdown(false)}
+          className={`focus:outline-none focus:border-gray-500 h-10 w-56 p-4 border-2 border-gray-300 rounded-md`}
+        />
+        <BiSearchAlt className="absolute text-xl text-gray-400 right-2 top-2.5" />
+        <div
+          className={` ${
+            globalContext.isSearchDropdownHidden || searchResults == null
+              ? "opacity-0   "
+              : "opacity-100 "
+          } absolute z-50  py-2 bg-white  transition-all duration-200 `}
+        ></div>
+        {searchResults &&
+          searchResults.slice(0, 6).map((result) => (
+            <div
+              className={`flex items-center gap-2 p-2 transition duration-200 bg-white cursor-pointer hover:bg-gray-100`}
+              onClick={() => {
+                flyToCoords(result.properties.Long, result.properties.Lat);
+                globalContext.updateSelectedMountain(result.properties);
+                setSearchQuery(result.properties.Mountain_Peak);
+                setSearchResults(null);
+              }}
+            >
+              <FaMountain />
+              {result.properties.Mountain_Peak}
+            </div>
+          ))}
+      </div>
     </div>
   );
 }

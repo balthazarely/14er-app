@@ -2,9 +2,10 @@ import React, { useRef, useEffect, useContext } from "react";
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
 import queryString from "query-string";
 import { AppContext } from "../utilities/AppContext";
-
-import DashboardCardContainer from "./DashboardCardContainer";
 import SearchCardContainer from "./SearchCardContainer";
+import MountainPulloutCard from "./MountainPulloutCard";
+import DefaultPullOutCard from "./DefaultPullOutCard";
+import DashboardCardContainer from "./DashboardCardContainer";
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoiYmFsdGhhemFyZWx5IiwiYSI6ImNrMDZzdWdsMTAwdjQzb3BkaTV1bm9nMXgifQ.yo3WzpDZCoXN35miOeEHKQ";
@@ -40,6 +41,7 @@ export default function BasicMap({ lng, setLng, lat, setLat, zoom, setZoom }) {
         clusterMaxZoom: 14,
         clusterRadius: 50,
       });
+
       map.current.addLayer({
         id: "clusters",
         type: "circle",
@@ -151,16 +153,7 @@ export default function BasicMap({ lng, setLng, lat, setLat, zoom, setZoom }) {
 
   useEffect(() => {
     if (globalContext.mountains) {
-      let tempCoords = globalContext.mountains.features.map(
-        (item) => item.geometry.coordinates
-      );
-      const bounds = new mapboxgl.LngLatBounds(tempCoords[0], tempCoords[0]);
-      for (const coord of tempCoords) {
-        bounds.extend(coord);
-      }
-      map.current.fitBounds(bounds, {
-        padding: 20,
-      });
+      resetMapView();
     }
   }, [globalContext.mountains]);
 
@@ -190,11 +183,35 @@ export default function BasicMap({ lng, setLng, lat, setLat, zoom, setZoom }) {
       essential: true,
     });
   };
+  const childFunc = useRef(null);
+
+  const resetMapView = () => {
+    let tempCoords = globalContext.mountains.features.map(
+      (item) => item.geometry.coordinates
+    );
+    const bounds = new mapboxgl.LngLatBounds(tempCoords[0], tempCoords[0]);
+    for (const coord of tempCoords) {
+      bounds.extend(coord);
+    }
+    map.current.fitBounds(bounds, {
+      padding: 100,
+    });
+    childFunc.current();
+  };
 
   return (
     <div className="relative dashboard">
-      <SearchCardContainer flyToCoords={flyToCoords} />
-      <DashboardCardContainer />
+      <div
+        className={` ${
+          globalContext.pulloutCardOpen ? "translate-x-0" : "-translate-x-72"
+        } absolute left-0 top-0 bg-white z-40 w-72  transition-all duration-200 `}
+      >
+        <DashboardCardContainer
+          childFunc={childFunc}
+          flyToCoords={flyToCoords}
+          resetMapView={resetMapView}
+        />
+      </div>
       <div className={`map-container`} ref={mapContainer} />
     </div>
   );

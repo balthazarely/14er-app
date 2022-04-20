@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
 import { SwishSpinner } from "react-spinners-kit";
+import { boxCreek, EastRidge, SouthRidge } from "./test-trails";
 
 export default function SingleMoutain() {
   let { mountainId } = useParams();
@@ -53,6 +54,31 @@ export default function SingleMoutain() {
     });
 
     map.current.on("load", () => {
+      // map.current.addSource("route", {
+      //   type: "geojson",
+      //   data: {
+      //     type: "Feature",
+      //     properties: {},
+      //     geometry: {
+      //       type: "LineString",
+      //       coordinates: SouthRidge,
+      //     },
+      //   },
+      // });
+      // map.current.addLayer({
+      //   id: "route",
+      //   type: "line",
+      //   source: "route",
+      //   layout: {
+      //     "line-join": "round",
+      //     "line-cap": "round",
+      //   },
+      //   paint: {
+      //     "line-color": "green",
+      //     "line-width": 8,
+      //   },
+      // });
+
       map.current.addSource("mapbox-dem", {
         type: "raster-dem",
         url: "mapbox://mapbox.mapbox-terrain-dem-v1",
@@ -90,11 +116,11 @@ export default function SingleMoutain() {
           ],
         },
       });
-      map.current.setFog({
-        range: [-1, 0],
-        color: "white",
-        "horizon-blend": 0.05,
-      });
+      // map.current.setFog({
+      //   range: [-1, 0],
+      //   color: "white",
+      //   "horizon-blend": 0.05,
+      // });
       new mapboxgl.Marker()
         .setLngLat([singleMountain.Long, singleMountain.Lat])
         .addTo(map.current);
@@ -107,11 +133,13 @@ export default function SingleMoutain() {
         map.current.flyTo({
           center: [+singleMountain.Long, +singleMountain.Lat],
           essential: true,
-          zoom: 14,
+          // zoom: 14,
+          zoom: 12,
           bearing: 30,
           // speed: 4,
           curve: 1,
-          pitch: 85,
+          // pitch: 85,
+          pitch: 40,
           duration: 4000,
         });
       });
