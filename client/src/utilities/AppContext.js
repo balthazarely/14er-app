@@ -8,6 +8,9 @@ const AppContextProvider = ({ children }) => {
   const [pulloutCardOpen, setPulloutCardOpen] = useState(true);
   const [mountainSelected, setMountainSelected] = useState(null);
   const [isSearchDropdownHidden, setIsSearchDropdownHidden] = useState(false);
+  const [mapStyle, setMapStyle] = useState(
+    "mapbox://styles/balthazarely/cl1fplb2w005514qoq6sosxlu"
+  );
 
   useEffect(() => {
     async function httpGetMountains() {
@@ -36,6 +39,10 @@ const AppContextProvider = ({ children }) => {
     setIsSearchDropdownHidden(boolean);
   };
 
+  const updateMapStyle = (str) => {
+    setMapStyle(str);
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -47,6 +54,8 @@ const AppContextProvider = ({ children }) => {
         mountainSelected,
         isSearchDropdownHidden,
         toggleSearchDropdown,
+        mapStyle,
+        updateMapStyle,
       }}
     >
       {children}

@@ -85,7 +85,7 @@ export default function SearchCardContainer({ flyToCoords, childFunc }) {
                 setSearchResults(null);
               }}
             >
-              <FaMountain />
+              <FaMountain className="text-red-800" />
               {result.properties.Mountain_Peak}
             </div>
           ))}

@@ -14,12 +14,13 @@ export default function BasicMap({ lng, setLng, lat, setLat, zoom, setZoom }) {
   const mapContainer = useRef(null);
   const map = useRef(null);
   const globalContext = useContext(AppContext);
+  const childFunc = useRef(null);
 
   useEffect(() => {
     if (map.current) return;
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: "mapbox://styles/balthazarely/cl1fplb2w005514qoq6sosxlu",
+      style: globalContext.mapStyle,
       center: [lng, lat],
       zoom: zoom,
     });
@@ -183,7 +184,6 @@ export default function BasicMap({ lng, setLng, lat, setLat, zoom, setZoom }) {
       essential: true,
     });
   };
-  const childFunc = useRef(null);
 
   const resetMapView = () => {
     let tempCoords = globalContext.mountains.features.map(
@@ -199,6 +199,140 @@ export default function BasicMap({ lng, setLng, lat, setLat, zoom, setZoom }) {
     childFunc.current();
   };
 
+  const setSataliteMapStyle = () => {
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: "mapbox://styles/mapbox/satellite-v9",
+      center: [lng, lat],
+      zoom: zoom,
+    });
+
+    map.current.on("move", () => {
+      setLng(map.current.getCenter().lng.toFixed(4));
+      setLat(map.current.getCenter().lat.toFixed(4));
+      setZoom(map.current.getZoom().toFixed(2));
+    });
+
+    map.current.on("load", () => {
+      map.current.addSource("earthquakes", {
+        type: "geojson",
+        data: globalContext.mountains,
+        cluster: true,
+        clusterMaxZoom: 14,
+        clusterRadius: 50,
+      });
+
+      map.current.addLayer({
+        id: "clusters",
+        type: "circle",
+        source: "earthquakes",
+        filter: ["has", "point_count"],
+
+        paint: {
+          "circle-color": [
+            "step",
+            ["get", "point_count"],
+            "#991b1b",
+            100,
+            "#f1f075",
+            750,
+            "#f28cb1",
+          ],
+          "circle-radius": [
+            "step",
+            ["get", "point_count"],
+            20,
+            100,
+            30,
+            750,
+            40,
+          ],
+          "circle-stroke-width": 4,
+          "circle-stroke-color": "#fff",
+        },
+      });
+
+      map.current.addLayer({
+        id: "cluster-count",
+        type: "symbol",
+        source: "earthquakes",
+        filter: ["has", "point_count"],
+        layout: {
+          "text-field": "{point_count_abbreviated}",
+          "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
+          "text-size": 16,
+        },
+        paint: {
+          "text-color": "#ffffff",
+        },
+      });
+
+      map.current.addLayer({
+        id: "unclustered-point",
+        type: "circle",
+        source: "earthquakes",
+        filter: ["!", ["has", "point_count"]],
+
+        paint: {
+          "circle-color": "#991b1b",
+          "circle-radius": 8,
+          "circle-stroke-width": 2,
+          "circle-stroke-color": "#fff",
+        },
+      });
+
+      map.current.on("click", "clusters", (e) => {
+        const features = map.current.queryRenderedFeatures(e.point, {
+          layers: ["clusters"],
+        });
+        const clusterId = features[0].properties.cluster_id;
+        map.current
+          .getSource("earthquakes")
+          .getClusterExpansionZoom(clusterId, (err, zoom) => {
+            if (err) return;
+
+            map.current.easeTo({
+              center: features[0].geometry.coordinates,
+              zoom: zoom,
+              duration: 1000,
+            });
+          });
+      });
+      map.current.on("click", "unclustered-point", (e) => {
+        globalContext.updateSelectedMountain(null);
+        window.history.replaceState(
+          null,
+          null,
+          `?mountain=${e.features[0].properties.ID}`
+        );
+
+        globalContext.updateSelectedMountain(e.features[0].properties);
+        globalContext.setPullout(true);
+        // setSelectedMountain(e.features[0].properties);
+        console.log(e.features[0].properties);
+        map.current.flyTo({
+          center: e.features[0].geometry.coordinates,
+          zoom: 14,
+          duration: 2000,
+          essential: true,
+        });
+      });
+
+      map.current.on("mouseenter", "clusters", () => {
+        map.current.getCanvas().style.cursor = "pointer";
+      });
+      map.current.on("mouseleave", "clusters", () => {
+        map.current.getCanvas().style.cursor = "";
+      });
+    });
+  };
+
+  const setOutdoorMapStyle = () => {
+    map.current.setStyle(
+      "mapbox://styles/balthazarely/cl1fplb2w005514qoq6sosxlu"
+    );
+  };
+
   return (
     <div className="relative dashboard">
       <div
@@ -210,6 +344,8 @@ export default function BasicMap({ lng, setLng, lat, setLat, zoom, setZoom }) {
           childFunc={childFunc}
           flyToCoords={flyToCoords}
           resetMapView={resetMapView}
+          setSataliteMapStyle={setSataliteMapStyle}
+          setOutdoorMapStyle={setOutdoorMapStyle}
         />
       </div>
       <div className={`map-container`} ref={mapContainer} />

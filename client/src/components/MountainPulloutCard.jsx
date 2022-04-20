@@ -18,10 +18,7 @@ export default function MountainPulloutCard({ flyToCoords, resetMapView }) {
   }, [globalContext.mountainSelected]);
 
   return (
-    <div
-      className="flex flex-col justify-center px-8 pb-8 "
-      onClick={() => globalContext.toggleSearchDropdown(true)}
-    >
+    <div className="flex flex-col px-8 pb-8 border-4 ">
       {globalContext.mountainSelected && (
         <>
           <div className="relative w-full h-56 ">

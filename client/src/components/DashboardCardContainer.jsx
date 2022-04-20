@@ -9,11 +9,13 @@ export default function DashboardCardContainer({
   flyToCoords,
   resetMapView,
   childFunc,
+  setOutdoorMapStyle,
+  setSataliteMapStyle,
 }) {
   const globalContext = useContext(AppContext);
 
   return (
-    <div className="h-screen">
+    <div className="flex flex-col h-screen">
       <ArrowLeftIcon
         onClick={() => globalContext.togglePullout()}
         className={` ${
@@ -21,14 +23,18 @@ export default function DashboardCardContainer({
         } absolute z-50 w-6 h-12 p-1 text-red-800 -translate-y-1/2 bg-white cursor-pointer top-1/2 transform -right-6 hover:bg-gray-100`}
       />
       <SearchCardContainer childFunc={childFunc} flyToCoords={flyToCoords} />
-      <div className="mt-8">
+      <div className="flex h-full mt-8 ">
         {globalContext.mountainSelected ? (
           <MountainPulloutCard
             flyToCoords={flyToCoords}
             resetMapView={resetMapView}
           />
         ) : (
-          <DefaultPullOutCard />
+          <DefaultPullOutCard
+            setSataliteMapStyle={setSataliteMapStyle}
+            setOutdoorMapStyle={setOutdoorMapStyle}
+            resetMapView={resetMapView}
+          />
         )}
       </div>
     </div>
