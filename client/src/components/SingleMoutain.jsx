@@ -17,8 +17,8 @@ export default function SingleMoutain() {
         `http://localhost:8000/mountains/${mountainId}`
       );
       let data = await response.json();
-      console.log(data, "geojson");
-      setSingleMountain(data);
+      console.log(data[0], "geojson");
+      setSingleMountain(data[0]);
     }
     httpGetMountain();
   }, []);

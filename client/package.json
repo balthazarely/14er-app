@@ -7,6 +7,7 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.0.0",
     "@testing-library/user-event": "^13.2.1",
+    "axios": "^0.27.2",
     "mapbox-gl": "^2.7.1",
     "query-string": "^7.1.1",
     "react": "^17.0.2",
@@ -16,6 +17,7 @@
     "react-router-dom": "^6.2.2",
     "react-scripts": "5.0.0",
     "react-spinners-kit": "^1.9.1",
+    "socket.io-client": "^4.5.0",
     "styled-components": "^5.3.5",
     "web-vitals": "^2.1.0"
   },

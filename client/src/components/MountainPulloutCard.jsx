@@ -1,12 +1,13 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 import { SwishSpinner } from "react-spinners-kit";
 import { Link } from "react-router-dom";
 import { AppContext } from "../utilities/AppContext";
 import { BiCurrentLocation } from "react-icons/bi";
-import { HiArrowLeft } from "react-icons/hi";
+import { HiArrowLeft, HiHeart } from "react-icons/hi";
 
 export default function MountainPulloutCard({ flyToCoords, resetMapView }) {
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
   const globalContext = useContext(AppContext);
 
   const onLoad = () => {
@@ -14,11 +15,30 @@ export default function MountainPulloutCard({ flyToCoords, resetMapView }) {
   };
 
   useEffect(() => {
+    const isFavs = globalContext.favorieMountains.some(
+      (item) => +item.id === globalContext.mountainSelected.ID
+    );
+    setIsFavorite(isFavs);
+  }, [globalContext.mountainSelected, globalContext.favorieMountains]);
+
+  useEffect(() => {
     setImageLoaded(false);
   }, [globalContext.mountainSelected]);
 
+  const handleAddToDB = () => {
+    let mtnObj = {
+      id: globalContext.mountainSelected.ID,
+      name: globalContext.mountainSelected.Mountain_Peak,
+    };
+    if (!isFavorite) {
+      globalContext.addToDb(mtnObj);
+    } else {
+      globalContext.removeFromDb(mtnObj);
+    }
+  };
+
   return (
-    <div className="flex flex-col px-8 pb-8 border-4 ">
+    <div className="flex flex-col px-8 pb-8 ">
       {globalContext.mountainSelected && (
         <>
           <div className="relative w-full h-56 ">
@@ -86,6 +106,20 @@ export default function MountainPulloutCard({ flyToCoords, resetMapView }) {
               graphic elementsBrowse 10,000+ hiking app work, designs,
               illustrations, and graphic elements
             </div>
+          </div>
+
+          <div>
+            <button
+              onClick={handleAddToDB}
+              className="flex px-4 py-2 my-2 font-bold shadow-md cursor-pointer "
+            >
+              Add to Favorites
+              <HiHeart
+                className={` ${
+                  isFavorite ? "text-red-500" : "text-white"
+                } text-2xl ml-1 `}
+              />
+            </button>
           </div>
 
           <div className="flex gap-1 mt-6 ">

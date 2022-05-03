@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Routes, Route, Link } from "react-router-dom";
 import Dashboard from "./components/Dashboard";
 import SingleMoutain from "./components/SingleMoutain";
+
 import "./App.css";
 import { AppContextProvider } from "./utilities/AppContext";
 

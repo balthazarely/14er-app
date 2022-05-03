@@ -24,7 +24,6 @@ export function createGeoJson(data) {
           Traffic_Low: +item.Traffic_Low,
           fourteener: item.fourteener,
           photo: item.photo,
-          haha: item.test_data,
         },
       };
     }),

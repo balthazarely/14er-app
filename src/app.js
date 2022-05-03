@@ -1,31 +1,43 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const { getMoutainData } = require("./models/mountains.model");
-const { getSingleMoutainData } = require("./models/singleMountainModel");
 
 app.use(
   cors({
     origin: "http://localhost:3000",
   })
 );
+app.use(express.json());
 
-app.get("/mountains", (req, res) => {
-  const allMountains = getMoutainData();
-  return res.status(200).json(allMountains);
-  //   const allSingleMountains = getSingleMoutainData();
-  //   return res.status(200).json(allSingleMountains);
+const {
+  httpGetAllMountains,
+  httpGetMountain,
+} = require("./controllers/mountains.controller");
+const {
+  httpGetAllFavoriteMountains,
+  httpAddFavoriteMountains,
+} = require("./controllers/favoriteMountain.controller");
+const FavoriteMountain = require("./models/favoriteMountain.mongo");
+
+app.get("/mountains", httpGetAllMountains);
+app.get("/mountains/:id", httpGetMountain);
+app.get("/favoriteMountains", httpGetAllFavoriteMountains);
+app.post("/favoriteMountains", async (req, res, next) => {
+  try {
+    const { id, name } = req.body;
+    const favoriteMountain = new FavoriteMountain({ id, name });
+    const result = await favoriteMountain.save();
+    // res.json(result);
+    return res.send(result);
+  } catch (error) {
+    return next(error);
+  }
 });
-
-app.get("/mountains/:id", (req, res) => {
-  const itemId = req.params.id;
-  const item = getMoutainData().find((_item) => _item.ID === itemId);
-  return res.status(200).json(item);
+app.delete("/favoriteMountains", async function (req, res) {
+  await FavoriteMountain.findOneAndDelete({
+    id: req.body.id,
+    name: req.body.name,
+  });
 });
-
-// app.get("/singlemountains", (req, res) => {
-//   const allSingleMountains = getSingleMoutainData();
-//   return res.status(200).json(allSingleMountains);
-// });
 
 module.exports = app;

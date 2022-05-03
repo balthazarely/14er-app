@@ -1,10 +1,9 @@
 const fs = require("fs");
 const { parse } = require("csv-parse");
-
-const mountains = [];
+const mountain = require("./mountains.mongo");
+const FavoriteMountain = require("./favoriteMountain.mongo");
 
 function loadMountainData() {
-  console.log("hi from moutnains");
   return new Promise((resolve, reject) => {
     fs.createReadStream(__dirname + "/14er.csv")
       .pipe(
@@ -12,8 +11,8 @@ function loadMountainData() {
           columns: true,
         })
       )
-      .on("data", (data) => {
-        mountains.push(data);
+      .on("data", async (data) => {
+        createMountainsInDb(data);
       })
       .on("error", (err) => {
         console.log(err);
@@ -26,12 +25,48 @@ function loadMountainData() {
   });
 }
 
-function getMoutainData() {
-  console.log(mountains);
-  return mountains;
+async function getAllMoutains() {
+  return await mountain.find({});
 }
+
+async function getMountain(id) {
+  return await mountain.find({
+    ID: id,
+  });
+}
+
+async function createMountainsInDb(mountain) {
+  try {
+    await mountain.updateOne({ mountain }, { mountain }, { upsert: true });
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+async function runCode() {
+  const newFavMount = new FavoriteMountain({
+    id: "1234asf5678fas9",
+    name: "Mt Massive",
+  });
+  const doc = await newFavMount.save();
+  console.log(doc);
+}
+
+async function getAllFavoriteMoutains() {
+  let favy = await FavoriteMountain.find({});
+  console.log(favy);
+  return favy;
+}
+
+// runCode().catch((error) => {
+//   console.error(error);
+// });
+// getAllFavoriteMoutains().catch((error) => {
+//   console.error(error);
+// });
 
 module.exports = {
   loadMountainData,
-  getMoutainData,
+  getAllMoutains,
+  getMountain,
 };
